@@ -1,0 +1,40 @@
+# openssl req -x509 -subj "/CN=demo-cert-1" -keyout demo.key -out demo.crt -sha256 -days 365 -nodes -newkey rsa
+
+spring.profiles.active: default
+
+server.ssl.bundle: server
+server.port: 8443
+
+spring.ssl.bundle.pem:
+  server:
+    reload-on-update: true
+    keystore:
+      certificate: "classpath:certs/demo.crt"
+      private-key: "classpath:certs/demo.key"
+
+---
+spring.config.activate.on-profile: dev
+spring.ssl.bundle.jks:
+  server:
+    reload-on-update: true
+    keystore:
+      location: classpath:keystore.jks
+      password: 123456
+      type: JKS
+    truststore:
+      location: classpath:truststore.jks
+      password: 123456
+      type: JKS
+---
+spring.config.activate.on-profile: prod
+spring.ssl.bundle.jks:
+  server:
+    reload-on-update: true
+    keystore:
+      location: ${CERT_PATH}/KeyStore.jks
+      password: ${PASSWORD}
+      type: JKS
+    truststore:
+      location: ${CERT_PATH}/truststore.jks
+      password: ${PASSWORD}
+      type: JKS
